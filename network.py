@@ -193,7 +193,7 @@ class _netD_CIFAR10(nn.Module):
     def __init__(self, ngpu, num_classes=10):
         super(_netD_CIFAR10, self).__init__()
         self.ngpu = ngpu
-
+        
         # Convolution 1
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 16, 3, 2, 1, bias=False),
@@ -238,6 +238,7 @@ class _netD_CIFAR10(nn.Module):
         # discriminator fc
         self.fc_dis = nn.Linear(4*4*512, 1)
         # aux-classifier fc
+        print (num_classes)
         self.fc_aux = nn.Linear(4*4*512, num_classes)
         # softmax and sigmoid
         self.softmax = nn.Softmax()

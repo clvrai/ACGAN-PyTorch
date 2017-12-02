@@ -111,9 +111,9 @@ print(netG)
 
 # Define the discriminator and initialize the weights
 if opt.dataset == 'imagenet':
-    netD = _netD(ngpu, nz)
+    netD = _netD(ngpu, num_classes)
 else:
-    netD = _netD_CIFAR10(ngpu, nz)
+    netD = _netD_CIFAR10(ngpu, num_classes)
 netD.apply(weights_init)
 if opt.netD != '':
     netD.load_state_dict(torch.load(opt.netD))
