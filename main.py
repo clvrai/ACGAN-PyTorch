@@ -17,7 +17,8 @@ import torchvision.utils as vutils
 import network
 from torch.autograd import Variable
 from utils import *
-from network import _netG, _netD, _netG_CIFAR10, _netD_CIFAR10
+from network import _netG, _netD, _netD_CIFAR10
+from network import _netG_CIFAR10_v1, _netG_CIFAR10_v2, _netG_CIFAR10_v3
 from folder import ImageFolder
 
 parser = argparse.ArgumentParser()
@@ -103,7 +104,7 @@ nc = 3
 if opt.dataset == 'imagenet':
     netG = _netG(ngpu, nz)
 else:
-    netG = _netG_CIFAR10(ngpu, nz)
+    netG = _netG_CIFAR10_v3(ngpu, nz)
 netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
