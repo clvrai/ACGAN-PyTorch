@@ -158,7 +158,7 @@ eval_onehot = np.zeros((opt.batchSize, num_classes))
 eval_onehot[np.arange(opt.batchSize), eval_label] = 1
 eval_noise_[np.arange(opt.batchSize), :num_classes] = eval_onehot[np.arange(opt.batchSize)]
 eval_noise_ = (torch.from_numpy(eval_noise_))
-eval_noise.data.copy_(eval_noise_.resize_(opt.batchSize, nz, 1, 1))
+eval_noise.data.copy_(eval_noise_.view(opt.batchSize, nz, 1, 1))
 
 # setup optimizer
 optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
@@ -200,7 +200,7 @@ for epoch in range(opt.niter):
         class_onehot[np.arange(batch_size), label] = 1
         noise_[np.arange(batch_size), :num_classes] = class_onehot[np.arange(batch_size)]
         noise_ = (torch.from_numpy(noise_))
-        noise.data.copy_(noise_.resize_(batch_size, nz, 1, 1))
+        noise.data.copy_(noise_.view(batch_size, nz, 1, 1))
         aux_label.data.resize_(batch_size).copy_(torch.from_numpy(label))
 
         fake = netG(noise)
