@@ -244,13 +244,12 @@ for epoch in range(opt.niter):
                  errD.data[0], avg_loss_D, errG.data[0], avg_loss_G, D_x, D_G_z1, D_G_z2, accuracy, avg_loss_A))
         if i % 100 == 0:
             vutils.save_image(
-                real_cpu, '%s/real_samples.png' % opt.outf, normalize=True)
+                real_cpu, '%s/real_samples.png' % opt.outf)
             print('Label for eval = {}'.format(eval_label))
             fake = netG(eval_noise)
             vutils.save_image(
                 fake.data,
                 '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
-                normalize=True
             )
 
     # do checkpointing
