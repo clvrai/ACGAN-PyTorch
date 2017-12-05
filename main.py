@@ -4,6 +4,7 @@ Code modified from PyTorch DCGAN examples: https://github.com/pytorch/examples/t
 from __future__ import print_function
 import argparse
 import os
+import numpy as np
 import random
 import torch
 import torch.nn as nn
@@ -14,12 +15,11 @@ import torch.utils.data
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
-import network
 from torch.autograd import Variable
-from utils import *
-from network import _netG, _netD, _netD_CIFAR10
-from network import _netG_CIFAR10_v1, _netG_CIFAR10_v2, _netG_CIFAR10_v3
+from utils import weights_init, compute_acc
+from network import _netG, _netD, _netD_CIFAR10, _netG_CIFAR10
 from folder import ImageFolder
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', required=True, help='cifar10 | imagenet')
@@ -70,21 +70,24 @@ if torch.cuda.is_available() and not opt.cuda:
 # dataset
 if opt.dataset == 'imagenet':
     # folder dataset
-    dataset = ImageFolder(root=opt.dataroot,
-                          transform=transforms.Compose([
-                              transforms.Scale(opt.imageSize),
-                              transforms.CenterCrop(opt.imageSize),
-                              transforms.ToTensor(),
-                              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                         ]),
-                         classes_idx=(10,20))
+    dataset = ImageFolder(
+        root=opt.dataroot,
+        transform=transforms.Compose([
+            transforms.Scale(opt.imageSize),
+            transforms.CenterCrop(opt.imageSize),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ]),
+        classes_idx=(10, 20)
+    )
 elif opt.dataset == 'cifar10':
-    dataset = dset.CIFAR10(root=opt.dataroot, download=True,
-                           transform=transforms.Compose([
-                               transforms.Scale(opt.imageSize),
-                               transforms.ToTensor(),
-                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                          ]))
+    dataset = dset.CIFAR10(
+        root=opt.dataroot, download=True,
+        transform=transforms.Compose([
+            transforms.Scale(opt.imageSize),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ]))
 else:
     raise NotImplementedError("No such dataset {}".format(opt.dataset))
 
@@ -104,7 +107,7 @@ nc = 3
 if opt.dataset == 'imagenet':
     netG = _netG(ngpu, nz)
 else:
-    netG = _netG_CIFAR10_v3(ngpu, nz)
+    netG = _netG_CIFAR10(ngpu, nz)
 netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
@@ -182,13 +185,12 @@ for epoch in range(opt.niter):
 
         dis_errD_real = dis_criterion(dis_output, dis_label)
         aux_errD_real = aux_criterion(aux_output, aux_label)
-        #print (aux_output.data, aux_label.data)
         errD_real = dis_errD_real + aux_errD_real
         errD_real.backward()
         D_x = dis_output.data.mean()
 
         # compute the current classification accuracy
-        accuracy = computeAcc(aux_output, aux_label)
+        accuracy = compute_acc(aux_output, aux_label)
 
         # train with fake
         noise.data.resize_(batch_size, nz, 1, 1).normal_(0, 1)
@@ -216,7 +218,7 @@ for epoch in range(opt.niter):
         # (2) Update G network: maximize log(D(G(z)))
         ###########################
         netG.zero_grad()
-        dis_label.data.fill_(real_label) # fake labels are real for generator cost
+        dis_label.data.fill_(real_label)  # fake labels are real for generator cost
         dis_output, aux_output = netD(fake)
         dis_errG = dis_criterion(dis_output, dis_label)
         aux_errG = aux_criterion(aux_output, aux_label)
@@ -241,14 +243,15 @@ for epoch in range(opt.niter):
               % (epoch, opt.niter, i, len(dataloader),
                  errD.data[0], avg_loss_D, errG.data[0], avg_loss_G, D_x, D_G_z1, D_G_z2, accuracy, avg_loss_A))
         if i % 100 == 0:
-            vutils.save_image(real_cpu,
-                    '%s/real_samples.png' % opt.outf,
-                    normalize=True)
+            vutils.save_image(
+                real_cpu, '%s/real_samples.png' % opt.outf, normalize=True)
             print('Label for eval = {}'.format(eval_label))
             fake = netG(eval_noise)
-            vutils.save_image(fake.data,
-                    '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
-                    normalize=True)
+            vutils.save_image(
+                fake.data,
+                '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
+                normalize=True
+            )
 
     # do checkpointing
     torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
