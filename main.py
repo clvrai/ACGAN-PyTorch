@@ -67,7 +67,7 @@ cudnn.benchmark = True
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
-# dataset
+# datase t
 if opt.dataset == 'imagenet':
     # folder dataset
     dataset = ImageFolder(
@@ -200,7 +200,7 @@ for epoch in range(opt.niter):
         class_onehot[np.arange(batch_size), label] = 1
         noise_[np.arange(batch_size), :num_classes] = class_onehot[np.arange(batch_size)]
         noise_ = (torch.from_numpy(noise_))
-        noise.data.copy_(noise_.view(batch_size, nz, 1, 1))
+        noise.data.copy_(noise_.view(opt.batchSize, nz, 1, 1))
         aux_label.data.resize_(batch_size).copy_(torch.from_numpy(label))
 
         fake = netG(noise)
@@ -249,7 +249,7 @@ for epoch in range(opt.niter):
             fake = netG(eval_noise)
             vutils.save_image(
                 fake.data,
-                '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
+                '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch)
             )
 
     # do checkpointing
