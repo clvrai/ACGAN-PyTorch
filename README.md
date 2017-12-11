@@ -2,7 +2,7 @@
 
 As part of the implementation series of [Joseph Lim's group at USC](http://csail.mit.edu/~lim), our motivation is to accelerate (or sometimes delay) research in the AI community by promoting open-source projects. To this end, we implement state-of-the-art research papers, and publicly share them with concise reports. Please visit our [group github site](https://github.com/gitlimlab) for other projects.
 
-This project is implemented by [Te-Lin Wu](https://github.com/telin0411) and the codes have been reviewed by --- before being published.
+This project is implemented by [Te-Lin Wu](https://github.com/telin0411) and the codes have been reviewed by [Shao-Hua Sun](https://github.com/shaohua0116) before being published.
 
 ## Descriptions
 This project is a [PyTorch](http://pytorch.org) implementation of [Conditional Image Synthesis With Auxiliary Classifier GANs](https://arxiv.org/abs/1610.09585) which was published as a conference proceeding at ICML 2017. This paper proposes a simple extention of GANs that employs label conditioning in additional to produce high resolution and high quality generated images. 
