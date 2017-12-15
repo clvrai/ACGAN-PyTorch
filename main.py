@@ -200,7 +200,7 @@ for epoch in range(opt.niter):
         class_onehot[np.arange(batch_size), label] = 1
         noise_[np.arange(batch_size), :num_classes] = class_onehot[np.arange(batch_size)]
         noise_ = (torch.from_numpy(noise_))
-        noise.data.copy_(noise_.view(opt.batchSize, nz, 1, 1))
+        noise.data.copy_(noise_.view(batch_size, nz, 1, 1))
         aux_label.data.resize_(batch_size).copy_(torch.from_numpy(label))
 
         fake = netG(noise)
